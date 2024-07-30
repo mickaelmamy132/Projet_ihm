@@ -1,0 +1,99 @@
+.appLogin{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  /* background: url(); */
+  background-size: cover;
+}
+.LoginForm{
+  background-color: rgba(255, 255, 255, 0.33);
+  box-shadow: 0px 8px 32px 0 rgba(0, 0, 255, 0.33);
+  backdrop-filter: blur(3px);
+  padding: 30px 16px 16px 16px;
+  border-radius: 16px;
+}
+
+.social{
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  color: white;
+  font-size: 24px;
+}
+.socialIcon{
+  cursor: pointer;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  width: 100vw;
+  height: 100vh;
+}
+.App .sideMenuandPagecontent{
+  display: flex ;
+  flex: 1;
+  justify-content: flex-start;
+  align-items: flex-start;
+  background-color: rgba(180, 167, 167, 0.15);
+  width: 100%;
+}
+.index_header{
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 20px 4px 12px;
+  border-bottom: 5px solid rgba(0, 0, 0, 0.05);
+}
+.Index_footer{
+  height: 50px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
+}
+.SideMenuVerticale{
+  height: 100%;
+}
+.Index_side{
+  height: 100%;
+  width: 250px;
+}
+.Index_page{
+  overflow: scroll;
+  display: flex;
+  height: 100%; 
+  padding-left: 20px;
+  width: 100%;
+}
+
+.canvas-container {
+  background-color: white;
+  border-radius: 12px;
+  align-items: center;
+  justify-content: center;
+  height: 500px;
+  width: 750px;
+  margin-right: 35px;
+}
+.canvas-container2 {
+  background-color: white;
+  border-radius: 12px;
+  align-items: center;
+  justify-content: center;
+  height: 450px;
+  width: 400px;
+  margin-left: 25px;
+}
+
+.test{
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 15px;
+  margin-bottom: 10px;
+}
