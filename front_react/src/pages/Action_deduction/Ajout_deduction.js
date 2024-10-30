@@ -8,6 +8,7 @@ import { DatePicker } from 'antd';
 import GetFiltreDeduction from '../../API/GetFiltreDeduction';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { motion } from 'framer-motion';
 
 const fields = [
   { name: 'employe_id', label: 'Matricule' },
@@ -97,110 +98,186 @@ function Ajout_deduction() {
   });
 
   return (
-    <div style={{
-      minWidth: '700px',
-      marginLeft: 80,
-      marginTop: 20,
-      backgroundColor: '#fff',
-      padding: '20px',
-      borderRadius: '8px',
-      alignItems: 'center',
-      position: 'absolute',
-      top: '35%',
-      left: '50%',
-      transform: 'translate(-40%, -50%)',
-    }}>
-      <Typography.Title>Formulaire de déduction</Typography.Title>
-      <Form onFinish={formik.handleSubmit} initialValues={formik.values} validateTrigger="onBlur">
-        {fields.map((field, index) => (
-          <Form.Item
-            key={field.name}
-            label={field.label}
-            name={field.name}
-            validateStatus={formik.errors && formik.errors[field.name] ? 'error' : undefined}
-            help={formik.errors && formik.errors[field.name]}
-            validateTrigger="onBlur"
-          >
-            {field.name === 'employe_id' ? (
-              <Select
-                placeholder={field.label}
-                value={formik.values[field.name]}
-                onChange={value => {
-                  formik.setFieldValue(field.name, value); // Mettre à jour directement la valeur
-                }}
+    <div style={{ display: 'flex', flexDirection: 'row', gap: '20px', margin: '20px', flexWrap: 'wrap' }}>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+        style={{
+          padding: '20px',
+          backgroundColor: '#f8f9fa',
+          borderRadius: '10px',
+          flex: '0 1 300px',
+          height: 'fit-content',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          border: '1px solid #e9ecef'
+        }}>
+        <Typography.Text strong style={{ fontSize: '16px', color: '#2c3e50' }}>
+          Ce formulaire vous permet d'ajouter des déductions pour les employés. Vous pouvez:
+        </Typography.Text>
+        <ul style={{ marginTop: '15px', paddingLeft: '20px', color: '#34495e' }}>
+          <li style={{ marginBottom: '8px' }}>Sélectionner un employé</li>
+          <li style={{ marginBottom: '8px' }}>Choisir jusqu'à 5 types de déductions</li>
+          <li style={{ marginBottom: '8px' }}>Définir la date de la déduction</li>
+        </ul>
+      </motion.div>
 
-                onBlur={() => formik.setFieldTouched(field.name, true)}
-                loading={loading}
-                style={{ marginRight: '8px', flex: 1 }}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        style={{
+          flex: '1 1 300px',
+          maxWidth: '700px',
+          backgroundColor: '#ffffff',
+          padding: '25px',
+          borderRadius: '12px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          position: 'relative',
+          boxShadow: '0 6px 12px rgba(0, 0, 0, 0.15)',
+          border: '1px solid #e0e0e0',
+          '@media (max-width: 768px)': {
+            width: '95%',
+            padding: '20px',
+            margin: '10px auto',
+          }
+        }}>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}>
+          <Typography.Title level={2} style={{ color: '#1a237e', marginBottom: '25px', textAlign: 'center' }}>
+            Formulaire de déduction
+          </Typography.Title>
+        </motion.div>
+
+        <Form
+          onFinish={formik.handleSubmit}
+          initialValues={formik.values}
+          validateTrigger="onBlur"
+          style={{ width: '100%' }}
+        >
+          {fields.map((field, index) => (
+            <motion.div
+              key={field.name}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.1 }}>
+              <Form.Item
+                label={<span style={{ color: '#2c3e50', fontWeight: '500' }}>{field.label}</span>}
+                name={field.name}
+                validateStatus={formik.errors && formik.errors[field.name] ? 'error' : undefined}
+                help={formik.errors && formik.errors[field.name]}
+                validateTrigger="onBlur"
+                style={{ marginBottom: '20px' }}
               >
-                {datasource.liste_employer_indeduction.map(item => (
-                  <Select.Option key={item.ID_employer} value={item.ID_employer}>
-                    {item.Nom} {item.Prenom}
-                  </Select.Option>
-                ))}
-              </Select>
-            ) : field.name === 'deduction_type' ? (
-              <div>
-                {Array.from({ length: dropdownCount }).map((_, index) => (
-                  <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
-                    <Select
-                      placeholder={field.label}
-                      value={formik.values[field.name][index]}
-                      onChange={value => formik.setFieldValue(field.name, [...formik.values[field.name].slice(0, index), value, ...formik.values[field.name].slice(index + 1)])}
-                      onBlur={() => formik.setFieldTouched(field.name, true)}
-                      loading={loading}
-                      style={{ marginRight: '8px', flex: 1 }}
-                    >
-                      {datasource.type.map(item => (
-                        <Select.Option key={item.id} value={item.id}>
-                          {item.type}
-                        </Select.Option>
-                      ))}
-                    </Select>
-                    <Button type="danger" onClick={() => handleRemoveDropdown(index)}>Supprimer</Button>
+                {field.name === 'employe_id' ? (
+                  <Select
+                    placeholder={field.label}
+                    value={formik.values[field.name]}
+                    onChange={value => {
+                      formik.setFieldValue(field.name, value);
+                    }}
+                    onBlur={() => formik.setFieldTouched(field.name, true)}
+                    loading={loading}
+                    style={{ width: '100%' }}
+                  >
+                    {datasource.liste_employer_indeduction.map(item => (
+                      <Select.Option key={item.ID_employer} value={item.ID_employer}>
+                        {item.Nom} {item.Prenom}
+                      </Select.Option>
+                    ))}
+                  </Select>
+                ) : field.name === 'deduction_type' ? (
+                  <div style={{ width: '100%' }}>
+                    {Array.from({ length: dropdownCount }).map((_, index) => (
+                      <motion.div
+                        key={index}
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        style={{ display: 'flex', alignItems: 'center', marginBottom: '12px', flexWrap: 'wrap', gap: '10px' }}>
+                        <Select
+                          placeholder={field.label}
+                          value={formik.values[field.name][index]}
+                          onChange={value => formik.setFieldValue(field.name, [...formik.values[field.name].slice(0, index), value, ...formik.values[field.name].slice(index + 1)])}
+                          onBlur={() => formik.setFieldTouched(field.name, true)}
+                          loading={loading}
+                          style={{ flex: 1, minWidth: '200px' }}
+                        >
+                          {datasource.type.map(item => (
+                            <Select.Option key={item.id} value={item.id}>
+                              {item.type}
+                            </Select.Option>
+                          ))}
+                        </Select>
+                        <Button danger type="primary" onClick={() => handleRemoveDropdown(index)} style={{ borderRadius: '6px' }}>Supprimer</Button>
+                      </motion.div>
+                    ))}
+                    {dropdownCount < 5 && (
+                      <motion.div whileHover={{ scale: 1.05 }}>
+                        <Button type="dashed" onClick={() => setDropdownCount(prevCount => prevCount + 1)} style={{ width: '100%', marginTop: '10px' }}>
+                          Ajouter un type
+                        </Button>
+                      </motion.div>
+                    )}
                   </div>
-                ))}
-                {dropdownCount < 5 && (
-                  <Button onClick={() => setDropdownCount(prevCount => prevCount + 1)}>Ajouter un type</Button>
+                ) : field.name === 'deduction_date' ? (
+                  <DatePicker
+                    style={{ width: '100%' }}
+                    value={formik.values[field.name]}
+                    onChange={value => formik.setFieldValue(field.name, value ? value.format('YYYY-MM-DD') : null)}
+                    onBlur={() => formik.setFieldTouched(field.name, true)}
+                  />
+                ) : (
+                  <Input
+                    placeholder={field.label}
+                    value={formik.values[field.name]}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    style={{ width: '100%' }}
+                  />
                 )}
-              </div>
-            ) : field.name === 'deduction_date' ? (
-              <DatePicker
-                style={{ width: '100%' }}
-                value={formik.values[field.name]}
-                onChange={value => formik.setFieldValue(field.name, value ? value.format('YYYY-MM-DD') : null)}
-                onBlur={() => formik.setFieldTouched(field.name, true)}
-              />
-            ) : (
-              <Input
-                placeholder={field.label}
-                value={formik.values[field.name]}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-              />
-            )}
-          </Form.Item>
-        ))}
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-          <Link to="/table_deduction">
-            <Button
-              type="danger"
-              style={{
-                marginRight: '30px',
-                backgroundColor: 'rgb(200, 0, 0, 2)',
-                color: 'white'
-              }} >
-              annuler
-            </Button>
-          </Link>
-          <Button type="primary" htmlType="submit" >
-            Créer
-          </Button>
-        </Form.Item>
-      </Form>
-
+              </Form.Item>
+            </motion.div>
+          ))}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            style={{ display: 'flex', justifyContent: 'center', gap: '30px', marginTop: '20px' }}>
+            <Form.Item>
+              <Link to="/table_deduction">
+                <Button
+                  danger
+                  type="primary"
+                  style={{
+                    borderRadius: '6px',
+                    height: '40px',
+                    padding: '0 25px'
+                  }} >
+                  Annuler
+                </Button>
+              </Link>
+              <Button
+                type="primary"
+                htmlType="submit"
+                style={{
+                  marginLeft: '30px',
+                  borderRadius: '6px',
+                  height: '40px',
+                  padding: '0 25px',
+                  background: '#1890ff'
+                }}>
+                Créer
+              </Button>
+            </Form.Item>
+          </motion.div>
+        </Form>
+      </motion.div>
     </div>
   );
 }
-
 export default Ajout_deduction;

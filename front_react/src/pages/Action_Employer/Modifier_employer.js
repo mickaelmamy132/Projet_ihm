@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Input, Button, Form, Typography, PlusOutlined, DatePicker, Upload, Row, Col } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
 import axios from 'axios';
-import { Link, useNavigate  } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import 'dayjs/locale/fr';
 import moment from 'moment';
 import { toast, ToastContainer } from 'react-toastify';
+import { motion } from "framer-motion";
 import 'react-toastify/dist/ReactToastify.css';
 
 
@@ -18,7 +19,6 @@ const Modifier_employer = () => {
 
     useEffect(() => {
         if (employe) {
-            console.log(employe);
             form.setFieldsValue(employe);
         }
     }, [employe]);
@@ -27,193 +27,302 @@ const Modifier_employer = () => {
         try {
             if (employe && employe.ID_employer) {
                 const formData = new FormData();
-                Object.entries(values).forEach(([key, value]) => {
-                    if (key === 'image' && value instanceof File) {
-                        formData.append(key, value);
-                    } else {
-                        formData.append(key, value);
+                
+                // Parcourir toutes les valeurs du formulaire
+                for (const key in values) {
+                    if (values[key] !== undefined && values[key] !== null) {
+                        if (key === 'image') {
+                            // Vérifier si une nouvelle image a été sélectionnée
+                            if (values[key] && values[key][0] && values[key][0].originFileObj) {
+                                formData.append(key, values[key][0].originFileObj);
+                            }
+                        } else {
+                            formData.append(key, values[key]);
+                        }
+                    }
+                }
+
+                // Ajouter l'ID de l'employé au formData
+                formData.append('ID_employer', employe.ID_employer);
+
+                const response = await axios.put(`http://127.0.0.1:8000/api/modif_employer/${employe.ID_employer}`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
                     }
                 });
-                // console.log(formData);
-                const response = await axios.put(`http://127.0.0.1:8000/api/modif_employer/${employe.ID_employer}`, formData);
-                // toast.success('Ajout réussi!', {
-                //     position: 'top-center',
-                //     autoClose: 1500,
-                //     hideProgressBar: false,
-                //     closeOnClick: true,
-                //     pauseOnHover: true,
-                //     draggable: true,
-                //     style: { backgroundColor: 'green', color: 'white' },
-                //     bodyStyle: { fontSize: '16px' },
-                //     progressStyle: { backgroundColor: 'white' },
-                //     onClose: () => navigate('/Employer'),
-                // });
-                formik.resetForm();
+
+                toast.success('Modification réussie!', {
+                    position: 'top-center',
+                    autoClose: 1500,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    style: { backgroundColor: 'green', color: 'white' },
+                    bodyStyle: { fontSize: '16px' },
+                    progressStyle: { backgroundColor: 'white' },
+                    onClose: () => navigate('/Employer'),
+                });
+                form.resetFields();
                 console.log('Modification réussie');
             } else {
                 console.error('Erreur : ID de l\'employé non défini');
             }
         } catch (error) {
             console.error('Erreur lors de la modification :', error);
+            toast.error('Erreur lors de la modification');
         }
     };
 
     const [selectedImage, setSelectedImage] = useState(employe ? employe.image_url : null);
 
-    const handleImageChange = (file) => {
-        const imageURL = URL.createObjectURL(file);
-        setSelectedImage(imageURL);
-        form.setFieldsValue({ image: file });
+    const handleImageChange = (info) => {
+        if (info.file) {
+            const imageURL = URL.createObjectURL(info.file.originFileObj);
+            setSelectedImage(imageURL);
+        }
     };
+
     const normFile = (e) => {
         if (Array.isArray(e)) {
             return e;
         }
-        return e && e.fileList;
+        return e?.fileList;
     };
 
     return (
-        <div style={{ maxWidth: '650px', height: '500px', backgroundColor: '#fff', padding: '20px', borderRadius: '8px', alignItems: 'center' }}>
-            <Typography.Title>Champ formulaire</Typography.Title>
-            <Form
-                form={form}
-                onFinish={handleSubmit}
-                initialValues={employe}
-                labelCol={{ span: 8 }}
-                wrapperCol={{ span: 16 }}
-            >
-                <Row gutter={[5, 5]}>
+        <div style={{ display: 'flex', flexDirection: 'row', gap: '50px', margin: '20px', flexWrap: 'wrap' }}>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                style={{
+                    padding: '20px',
+                    backgroundColor: '#f8f9fa',
+                    borderRadius: '10px',
+                    flex: '0 1 400px',
+                    height: 'fit-content',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    border: '1px solid #e9ecef'
+                }}>
+                <Typography.Text strong style={{ fontSize: '18px', color: '#2c3e50' }}>
+                    Ce formulaire vous permet d'ajouter un nouvel employé dans le système. Vous pouvez:
+                    <ul style={{ marginTop: '10px', paddingLeft: '20px' }}>
+                        <li>Saisir les informations personnelles</li>
+                        <li>Ajouter une photo d'identité</li>
+                        <li>Spécifier le poste et le département</li>
+                        <li>Définir le salaire et les conditions de travail</li>
+                    </ul>
+                </Typography.Text>
+            </motion.div>
 
-                    <Col span={12}>
-                        <Form.Item
-                            label="Image"
-                            name="image"
-                        >
-                            <Upload
-                                valuePropName="fileList"
-                                getValueFromEvent={normFile}
-                                extra="Formats acceptés: JPG, PNG, GIF. Taille maximale: 100Mo"
-                                listType="picture-card"
-                                showUploadList={false}
-                                beforeUpload={() => false}
-                                onChange={(info) => {
-                                    if (info.file) {
-                                        handleImageChange(info.file);
-                                    }
-                                }}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                className='ajout_employe'
+                style={{
+                    flex: '1',
+                    maxWidth: '850px',
+                    height: '600px',
+                    backgroundColor: '#fff',
+                    padding: '40px',
+                    borderRadius: '8px',
+                    position: 'relative',
+                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                }}>
+
+                <motion.div
+                    initial={{ y: -20 }}
+                    animate={{ y: 0 }}
+                    transition={{ delay: 0.2 }}
+                >
+                    <Typography.Title>Champ formulaire modification</Typography.Title>
+                </motion.div>
+
+                <Form
+                    form={form}
+                    onFinish={handleSubmit}
+                    initialValues={employe}
+                    labelCol={{ span: 8 }}
+                    wrapperCol={{ span: 16 }}
+                >
+                    <Row gutter={[5, 5]}>
+
+                        <Col span={12}>
+                            <motion.div
+                                initial={{ x: -20, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                transition={{ duration: 0.5 }}
                             >
-                                {selectedImage ? (
-                                    <img src={selectedImage} alt="Employé" style={{ maxWidth: '100%', maxHeight: '200px' }} />
-                                ) : (
-                                    <div>
-                                        <UploadOutlined />
-                                        <div style={{ marginTop: 8 }}>Ajouter une image</div>
-                                    </div>
-                                )}
-                            </Upload>
-                        </Form.Item>
-                    </Col>
+                                <Form.Item
+                                    label="Image"
+                                    name="image"
+                                >
+                                    <Upload
+                                        valuePropName="fileList"
+                                        getValueFromEvent={normFile}
+                                        extra="Formats acceptés: JPG, PNG, GIF. Taille maximale: 100Mo"
+                                        listType="picture-card"
+                                        showUploadList={false}
+                                        beforeUpload={() => false}
+                                        onChange={(info) => {
+                                            if (info.file) {
+                                                handleImageChange(info.file);
+                                            }
+                                        }}
+                                    >
+                                        {selectedImage ? (
+                                            <img src={selectedImage} alt="Employé" style={{ maxWidth: '100%', maxHeight: '200px' }} />
+                                        ) : (
+                                            <div>
+                                                <UploadOutlined />
+                                                <div style={{ marginTop: 8 }}>Ajouter une image</div>
+                                            </div>
+                                        )}
+                                    </Upload>
+                                </Form.Item>
+                            </motion.div>
+                        </Col>
 
-                    <Col span={12}>
-                        <Form.Item
-                            label="Nom"
-                            name="Nom"
-                            rules={[{ required: true, message: 'Le nom est requis' }]}
-                        >
-                            <Input placeholder="Nom" />
-                        </Form.Item>
-                    </Col>
+                        <Col span={12}>
+                            <motion.div
+                                initial={{ x: 20, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                transition={{ duration: 0.5, delay: 0.1 }}
+                            >
+                                <Form.Item
+                                    label="Nom"
+                                    name="Nom"
+                                    rules={[{ required: true, message: 'Le nom est requis' }]}
+                                >
+                                    <Input placeholder="Nom" />
+                                </Form.Item>
+                            </motion.div>
+                        </Col>
 
-                    <Col span={12}>
-                        <Form.Item
-                            label="Prénom"
-                            name="Prenom"
-                            rules={[{ required: true, message: 'Le prénom est requis' }]}
-                        >
-                            <Input placeholder="Prénom" />
-                        </Form.Item>
-                    </Col>
+                        <Col span={12}>
+                            <motion.div
+                                initial={{ x: -20, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                transition={{ duration: 0.5, delay: 0.2 }}
+                            >
+                                <Form.Item
+                                    label="Prénom"
+                                    name="Prenom"
+                                    rules={[{ required: true, message: 'Le prénom est requis' }]}
+                                >
+                                    <Input placeholder="Prénom" />
+                                </Form.Item>
+                            </motion.div>
+                        </Col>
 
-                    <Col span={12}>
-                        <Form.Item
-                            label="Adresse"
-                            name="Adresse"
-                            rules={[{ required: true, message: 'Le prénom est requis' }]}
-                        >
-                            <Input placeholder="Adresse" />
-                        </Form.Item>
-                    </Col>
+                        <Col span={12}>
+                            <motion.div
+                                initial={{ x: 20, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                transition={{ duration: 0.5, delay: 0.3 }}
+                            >
+                                <Form.Item
+                                    label="Adresse"
+                                    name="Adresse"
+                                    rules={[{ required: true, message: 'L\'adresse est requise' }]}
+                                >
+                                    <Input placeholder="Adresse" />
+                                </Form.Item>
+                            </motion.div>
+                        </Col>
 
-                    <Col span={12}>
-                        <Form.Item
-                            label="Telephone"
-                            name="Tel"
-                            rules={[{ required: true, message: 'Le numero est requis' }]}
-                        >
-                            <Input placeholder="numero" />
-                        </Form.Item>
-                    </Col>
+                        <Col span={12}>
+                            <motion.div
+                                initial={{ x: -20, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                transition={{ duration: 0.5, delay: 0.4 }}
+                            >
+                                <Form.Item
+                                    label="Telephone"
+                                    name="Tel"
+                                    rules={[{ required: true, message: 'Le numero est requis' }]}
+                                >
+                                    <Input placeholder="numero" />
+                                </Form.Item>
+                            </motion.div>
+                        </Col>
 
-                    <Col span={12}>
-                        <Form.Item
-                            label="Email"
-                            name="Email"
-                            rules={[{ required: true, message: 'Le Email est requis' }]}
-                        >
-                            <Input placeholder="Email" />
-                        </Form.Item>
-                    </Col>
+                        <Col span={12}>
+                            <motion.div
+                                initial={{ x: 20, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                transition={{ duration: 0.5, delay: 0.5 }}
+                            >
+                                <Form.Item
+                                    label="Email"
+                                    name="Email"
+                                    rules={[{ required: true, message: 'Le Email est requis' }]}
+                                >
+                                    <Input placeholder="Email" />
+                                </Form.Item>
+                            </motion.div>
+                        </Col>
 
-                    <Col span={12}>
-                        <Form.Item
-                            label="Date d'embauche"
-                            name="Date_embauche"
-                            rules={[{ required: true, message: 'Date d`embauche est requise' }]}
-                        >
-                            {/* <DatePicker
-                                style={{ width: '100%' }}
-                                defaultValue={employe.Date_embauche ? moment(new Date(employe.Date_embauche)) : null}
-                            /> */}
-                        </Form.Item>
-                    </Col>
+                        <Col span={12}>
+                            <motion.div
+                                initial={{ x: 20, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                transition={{ duration: 0.5, delay: 0.7 }}
+                            >
+                                <Form.Item
+                                    label="Departememt"
+                                    name="Departement"
+                                    rules={[{ required: true, message: 'Departement est requis' }]}
+                                >
+                                    <Input placeholder="Departement" />
+                                </Form.Item>
+                            </motion.div>
+                        </Col>
 
-                    <Col span={12}>
-                        <Form.Item
-                            label="Departememt"
-                            name="Departement"
-                            rules={[{ required: true, message: 'Departement est requis' }]}
-                        >
-                            <Input placeholder="Departement" />
+                        <Col span={12}>
+                            <motion.div
+                                initial={{ x: -20, opacity: 0 }}
+                                animate={{ x: 0, opacity: 1 }}
+                                transition={{ duration: 0.5, delay: 0.8 }}
+                            >
+                                <Form.Item
+                                    label="Poste"
+                                    name="Poste"
+                                    rules={[{ required: true, message: 'Post est requis' }]}
+                                >
+                                    <Input placeholder="Poste" />
+                                </Form.Item>
+                            </motion.div>
+                        </Col>
+                    </Row>
+                    <motion.div
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 0.5, delay: 0.9 }}
+                    >
+                        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+                            <Link to="/Employer">
+                                <Button
+                                    type="danger"
+                                    style={{
+                                        marginRight: '35px',
+                                        backgroundColor: 'rgb(200, 0, 0, 2)',
+                                        color: 'white'
+                                    }} >
+                                    annuler
+                                </Button>
+                            </Link>
+                            <Button type="primary" htmlType="submit">
+                                Envoyer
+                            </Button>
                         </Form.Item>
-                    </Col>
+                    </motion.div>
+                </Form>
 
-                    <Col span={12}>
-                        <Form.Item
-                            label="Poste"
-                            name="Poste"
-                            rules={[{ required: true, message: 'Post est requis' }]}
-                        >
-                            <Input placeholder="Adresse" />
-                        </Form.Item>
-                    </Col>
-                </Row>
-                <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-                    <Link to="/Employer">
-                        <Button
-                            type="danger"
-                            style={{
-                                marginRight: '35px',
-                                backgroundColor: 'rgb(200, 0, 0, 2)',
-                                color: 'white'
-                            }} >
-                            annuler
-                        </Button>
-                    </Link>
-                    <Button type="primary" htmlType="submit">
-                        Envoyer
-                    </Button>
-                </Form.Item>
-            </Form>
+            </motion.div>
+            <ToastContainer />
         </div>
     );
 }

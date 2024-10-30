@@ -61,62 +61,25 @@ function Login({ onLogin }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
         >
-
-
-
-
-
-
-
-
-
-
-
-
-
             <div className="flex w-full max-w-6xl">
                 {/* Section gauche */}
                 <motion.div
-
-
-
-
                     initial={{ opacity: 0, x: -50 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.6 }}
                     className="hidden lg:flex lg:w-1/2 flex-col justify-center items-center pr-12"
                 >
-
-
-
-
-
-
-
-
-
-
                     <img 
                         src="/login-illustration.svg" 
                         alt="Login illustration" 
                         className="w-full max-w-md mb-8"
                     />
                     <motion.div
-
-
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
-
                         className="text-center"
                     >
-
-
-
-
-
-
-
                         <h2 className="text-3xl font-bold text-gray-800 mb-4">
                             Bienvenue sur notre plateforme
                         </h2>
@@ -124,7 +87,6 @@ function Login({ onLogin }) {
                             Connectez-vous pour accéder à toutes nos fonctionnalités
                         </p>
                     </motion.div>
-
                 </motion.div>
 
                 {/* Section droite - Formulaire de connexion */}
@@ -142,70 +104,27 @@ function Login({ onLogin }) {
                     }}
                 >
                     <motion.div
-
-
-
-
                         initial={{ y: -20 }}
                         animate={{ y: 0 }}
                         transition={{ delay: 0.2 }}
                         className="sm:mx-auto sm:w-full sm:max-w-md"
                     >
-
-
-
-
-
-
-
                         <Typography.Title style={{ textAlign: 'center', marginBottom: '2rem' }}>
                             Bienvenue !
                         </Typography.Title>
                     </motion.div>
-
-
-
-
-
-
                     <Form 
                         className='LoginForm mt-8 space-y-6' 
                         onFinish={onFinish}
                         layout="vertical"
                         size="large"
                     >
-
-
-
-
-
-
-
-
-
-
                         <motion.div
                             initial={{ x: -20, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
                             transition={{ delay: 0.3 }}
                             className="space-y-4"
                         >
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                             <Form.Item
                                 label='Nom utilisateur'
                                 name={'nom'}

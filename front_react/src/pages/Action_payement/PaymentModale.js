@@ -1,32 +1,27 @@
 import React from 'react'
 import { Modal, Button } from 'antd';
 import jsPDF from 'jspdf';
+import { motion } from 'framer-motion';
 
 function PaymentModale({ isVisible, onCancel, paymentDetails }) {
 
   const generatePDF = (details) => {
     const doc = new jsPDF();
-    // Définir la taille de la police et le style pour "Fiche de payement"
-    const fontSize = 30; // Augmenter la taille de la police
+    const fontSize = 30;
     const x = 70;
     const y = 10;
     doc.setFontSize(fontSize);
-    doc.setFont('helvetica', 'bold'); // Définir la police en gras
+    doc.setFont('helvetica', 'bold');
 
-    // Ajouter le texte "Fiche de payement"
     const text = 'Fiche de payement';
     doc.text(text, x, y);
 
-    // Ajouter une ligne pour simuler le soulignement
     const textWidth = doc.getTextWidth(text);
-    const underlineY = y + 1; // Position de la ligne sous le texte
+    const underlineY = y + 1;
     doc.line(x, underlineY, x + textWidth, underlineY);
 
-    // Restaurer la taille de la police précédente si nécessaire
     doc.setFontSize(12);
     doc.setFont('helvetica', 'bold');
-
-    // Ajouter les autres textes
 
     doc.text(`Reference: ${paymentDetails.id}`, 10, 30);
     doc.text(`Employer: ${paymentDetails.employer_id}`, 10, 40);
@@ -45,29 +40,61 @@ function PaymentModale({ isVisible, onCancel, paymentDetails }) {
   return (
     <div> 
       <Modal
-      title="Informations de paiement"
-      visible={isVisible}
-      onCancel={onCancel}
-      footer={[
-        <Button key="back" onClick={onCancel}>
-          Fermer
-        </Button>,
-        <Button key="print" type="primary" onClick={generatePDF}>
-          Imprimer
-        </Button>,
-      ]}
-    >
-      {paymentDetails && (
-        <>
-          <p>Reference: {paymentDetails.id}</p>
-          <p>Employer: {paymentDetails.employer_id}</p>
-          <p>Salaire: {paymentDetails.salaire}</p>
-          <p>Date de payment: {paymentDetails.payment_date}</p>
-          <p>Deduction: {paymentDetails.deduction}</p>
-          <p>salaire Net: {paymentDetails.amount}</p>
-        </>
-      )}
-    </Modal>
+        title={
+          <motion.h2
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-2xl font-bold text-center text-blue-600"
+          >
+            Informations de paiement
+          </motion.h2>
+        }
+        visible={isVisible}
+        onCancel={onCancel}
+        footer={[
+          <Button key="back" onClick={onCancel}>
+            Fermer
+          </Button>,
+          <Button key="print" type="primary" onClick={generatePDF}>
+            Imprimer
+          </Button>,
+        ]}
+        className="rounded-lg"
+      >
+        {paymentDetails && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-4 p-4"
+          >
+            <motion.div
+              className="bg-gray-50 p-4 rounded-lg shadow-sm"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              <motion.p className="text-gray-700 mb-2">
+                <span className="font-semibold">Reference:</span> {paymentDetails.id}
+              </motion.p>
+              <motion.p className="text-gray-700 mb-2">
+                <span className="font-semibold">Employer:</span> {paymentDetails.employer_id}
+              </motion.p>
+              <motion.p className="text-gray-700 mb-2">
+                <span className="font-semibold">Salaire:</span> {paymentDetails.salaire}
+              </motion.p>
+              <motion.p className="text-gray-700 mb-2">
+                <span className="font-semibold">Date de payment:</span> {paymentDetails.payment_date}
+              </motion.p>
+              <motion.p className="text-gray-700 mb-2">
+                <span className="font-semibold">Deduction:</span> {paymentDetails.deduction}
+              </motion.p>
+              <motion.p className="text-gray-700">
+                <span className="font-semibold">Salaire Net:</span> {paymentDetails.amount}
+              </motion.p>
+            </motion.div>
+          </motion.div>
+        )}
+      </Modal>
     </div>
   )
 }

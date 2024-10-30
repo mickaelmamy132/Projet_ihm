@@ -37,15 +37,17 @@ function App() {
   }
 
   return (
-    <div className="App">
+    <div className="App" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', overflow: 'hidden' }}>
       <Index_header />
       {isLoggedIn ? (
-        <div className='sideMenuandPagecontent'>
+        <div className='sideMenuandPagecontent' style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
           <Index_side onLogout={handleLogout} />
           <Index_page />
         </div>
       ) : (
-        <Login onLogin={handleLogin} />
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flex: 1 }}>
+          <Login onLogin={handleLogin} />
+        </div>
       )}
       <Index_footer />
     </div>

@@ -4,7 +4,8 @@ import moment from "moment";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 const { Option } = Select;
 
 function Payement_employer() {
@@ -29,7 +30,7 @@ function Payement_employer() {
       try {
         const response = await axios.get(
           `http://127.0.0.1:8000/api/Filtre_payement/${year}/${month}?employerId=${selectedEmployerId}`
-        ); // Ajoutez l'ID de l'employeur à l'URL
+        );
         const data = response.data;
         const unpaidEmployers = data.unpaidEmployers;
         setEmployerList(unpaidEmployers);
@@ -52,7 +53,7 @@ function Payement_employer() {
 
   const handleSelectChange = (value) => {
     setSelectedEmployer(value);
-    setSelectedEmployerId(value); // Mettre à jour l'ID de l'employeur sélectionné
+    setSelectedEmployerId(value);
 
     const selectedInfo = employerList.find(
       (employer) => employer.ID_employer === value
@@ -126,87 +127,223 @@ function Payement_employer() {
   }
 
   return (
-    <div
-    style={{
-      display: "flex",
-      flexDirection: "column",
-      maxWidth: "500px",
-      height: "auto",
-      backgroundColor: "#fff",
-      padding: "50px",
-      marginTop: "20px",
-      borderRadius: "8px",
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      boxShadow: "0 4px 8px rgba(0,0,0,0.1)" 
-    }}
-    >
-      <div style={{ marginBottom: "20px" }}>
-        <label>Date: </label>
-        <DatePicker onChange={handleDateChange} defaultValue={selectedDate} />
-      </div>
-      <div style={{ marginBottom: "20px" }}>
-        <label htmlFor="employerSelect">Sélectionner un employer</label>
-        <Select
-          id="employerSelect"
-          value={selectedEmployer}
-          onChange={handleSelectChange}
-          style={{ width: 200 }}
-          placeholder="Sélectionnez un employeur"
-          loading={loading}
-        >
-          {filteredEmployerList.map((employer) => (
-            <Option key={employer.ID_employer} value={employer.ID_employer}>
-              {employer.Nom} {employer.Prenom} - matriculé:{" "}
-              {employer.ID_employer}
-            </Option>
-          ))}
-        </Select>
-      </div>
-      {selectedEmployerInfo && (
-        <div
+    <div style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: '20px',
+      width: '100%',
+      marginLeft: '250px' // Add space for sidebar
+    }}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          maxWidth: "800px",
+          width: "90%",
+          backgroundColor: "#fff",
+          padding: "40px",
+          borderRadius: "15px",
+          boxShadow: "0 8px 16px rgba(0,0,0,0.1)"
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="section-title"
           style={{
-            backgroundColor: "white",
-            padding: "15px",
-            borderRadius: "15px",
+            marginBottom: "30px",
+            textAlign: "center",
+            borderBottom: "2px solid #f0f0f0",
+            paddingBottom: "15px"
           }}
         >
-          <h2>Informations de l'employeur sélectionné :</h2>
-          <p>
-            matricule: {selectedEmployerInfo.ID_employer} Nom:{" "}
-            {selectedEmployerInfo.Nom} et Prénom: {selectedEmployerInfo.Prenom}
-          </p>
-          <p>Adresse: {selectedEmployerInfo.Adresse}</p>
-          <p>Telephone: {selectedEmployerInfo.Tel}</p>
-          <p>Email: {selectedEmployerInfo.Email}</p>
-          <p>Departement: {selectedEmployerInfo.Departement}</p>
-          <p>Poste: {selectedEmployerInfo.Poste}</p>
-          <p>salaire: {selectedEmployerInfo.Salaire_base}</p>
-          <h3>Déductions associées :</h3>
-          <ul>
-            {deductions.map((deduction) => (
-              <li key={deduction.deduction_id}>
-                {/* <strong>Déduction ID :</strong> {deduction.deduction_id} */}
-                <ul>
-                  {deduction.deduction_types.split(",").map((type, index) => (
-                    <li key={index}>
-                      <strong>Description :</strong> {type} :{" "}
-                      {deduction.deduction_amount.split(",")[index]}
-                    </li>
-                  ))}
-                </ul>
-              </li>
-            ))}
-          </ul>
-          <Button type="primary" onClick={handlePayment} loading={loading}>
-            Payer
-          </Button>
-        </div>
-      )}
+          <h1 style={{ color: "#1890ff", margin: 0 }}>Gestion des Paiements</h1>
+          <p style={{ color: "#666", marginTop: "10px" }}>Sélectionnez un employé et une date pour effectuer le paiement</p>
+
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3 }}
+          style={{
+            display: "flex",
+            gap: "20px",
+            marginBottom: "30px",
+            alignItems: "center",
+            justifyContent: "center"
+          }}
+        >
+          <div style={{ flex: 1 }}>
+            <label style={{ display: "block", marginBottom: "8px", color: "#666" }}>Date: </label>
+            <DatePicker
+              onChange={handleDateChange}
+              defaultValue={selectedDate}
+              style={{ width: "100%" }}
+            />
+          </div>
+          <div style={{ flex: 1 }}>
+            <label style={{ display: "block", marginBottom: "8px", color: "#666" }}>Sélectionner un employer</label>
+            <Select
+              id="employerSelect"
+              value={selectedEmployer}
+              onChange={handleSelectChange}
+              style={{ width: "100%" }}
+              placeholder="Sélectionnez un employeur"
+              loading={loading}
+            >
+              {filteredEmployerList.map((employer) => (
+                <Option key={employer.ID_employer} value={employer.ID_employer}>
+                  {employer.Nom} {employer.Prenom} - matriculé: {employer.ID_employer}
+                </Option>
+              ))}
+            </Select>
+          </div>
+        </motion.div>
+
+        {selectedEmployerInfo && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            style={{
+              backgroundColor: "#f8f9fa",
+              padding: "25px",
+              borderRadius: "12px",
+              boxShadow: "0 4px 6px rgba(0,0,0,0.05)"
+            }}
+          >
+            <h2 style={{ color: "#1890ff", marginBottom: "20px" }}>Informations de l'employeur</h2>
+            <Row gutter={[16, 16]}>
+              <Col span={12}>
+                <div className="info-item">
+                  <strong>Matricule:</strong> {selectedEmployerInfo.ID_employer}
+                </div>
+                <div className="info-item">
+                  <strong>Nom complet:</strong> {selectedEmployerInfo.Nom} {selectedEmployerInfo.Prenom}
+                </div>
+                <div className="info-item">
+                  <strong>Email:</strong> {selectedEmployerInfo.Email}
+                </div>
+              </Col>
+              <Col span={12}>
+                <div className="info-item">
+                  <strong>Téléphone:</strong> {selectedEmployerInfo.Tel}
+                </div>
+                <div className="info-item">
+                  <strong>Département:</strong> {selectedEmployerInfo.Departement}
+                </div>
+                <div className="info-item">
+                  <strong>Salaire de base:</strong> {selectedEmployerInfo.Salaire_base}
+                </div>
+              </Col>
+            </Row>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              style={{ marginTop: "20px" }}
+            >
+              <h3 style={{ color: "#1890ff" }}>Déductions</h3>
+              <ul style={{ listStyle: "none", padding: 0 }}>
+                {deductions.map((deduction) => (
+                  <li key={deduction.deduction_id} style={{ marginBottom: "10px" }}>
+                    <ul style={{ listStyle: "none", padding: 0 }}>
+                      {deduction.deduction_types.split(",").map((type, index) => (
+                        <li key={index} style={{
+                          padding: "8px",
+                          backgroundColor: "#fff",
+                          borderRadius: "6px",
+                          marginBottom: "5px"
+                        }}>
+                          {type}: {deduction.deduction_amount.split(",")[index]}
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.6 }}
+              style={{ textAlign: "center", marginTop: "20px" }}
+            >
+              <Button
+                type="primary"
+                onClick={handlePayment}
+                loading={loading}
+                size="large"
+                style={{
+                  minWidth: "200px",
+                  height: "45px",
+                  fontSize: "16px"
+                }}
+              >
+                Effectuer le paiement
+              </Button>
+            </motion.div>
+
+          </motion.div>
+        )}
+
+        <Link 
+          to="/table_Payement" 
+          style={{ 
+            color: "#ff0000", 
+            textDecoration: "none", 
+            marginTop: "20px", 
+            display: "block", 
+            textAlign: "center",
+            padding: "10px",
+            border: "2px solid #ff0000",
+            borderRadius: "8px",
+            backgroundColor: "#fff",
+            transition: "all 0.3s ease",
+            fontSize: "16px",
+            fontWeight: "bold",
+            ":hover": {
+              backgroundColor: "#ff0000",
+              color: "#fff",
+              transform: "scale(1.05)"
+            }
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = "#ff0000"
+            e.target.style.color = "#fff"
+            e.target.style.transform = "scale(1.05)"
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = "#fff"
+            e.target.style.color = "#ff0000"
+            e.target.style.transform = "scale(1)"
+          }}
+        >
+          Annuler le paiement
+        </Link>
+        <style jsx>{`
+          .info-item {
+            margin-bottom: 12px;
+            padding: 8px;
+            background-color: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+          }
+          .info-item strong {
+            color: #1890ff;
+            margin-right: 8px;
+          }
+        `}</style>
+      </motion.div>
     </div>
   );
 }
-
 export default Payement_employer;

@@ -9,8 +9,10 @@ import { Select } from 'antd';
 import getEmployer from '../../API/getEmployer';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { motion } from "framer-motion";
 
- 
+
+
 const fields = [
     { name: 'image', label: 'Image' },
     { name: 'Nom', label: 'Nom' },
@@ -65,10 +67,10 @@ function AjoutEmployer() {
         const handleResize = () => {
             if (!isFullScreen) {
                 const windowHeight = window.innerHeight;
-                const maxHeight = windowHeight - 100; 
+                const maxHeight = windowHeight - 100;
                 setDynamicHeight(`${maxHeight}px`);
             } else {
-                setDynamicHeight('600px'); 
+                setDynamicHeight('600px');
             }
         };
 
@@ -189,113 +191,168 @@ function AjoutEmployer() {
 
 
     return (
-        <div className='ajout_employe' style={{
-            maxWidth: '850px',
-            height: '600px',
-            backgroundColor: '#fff',
-            padding: '40px',
-            borderRadius: '8px',
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-40%, -50%)',
-        }}>
-            <Typography.Title>Champ formulaire</Typography.Title>
-            <Form
-                onFinish={formik.handleSubmit}
-                initialValues={formik.values}
-                validateTrigger="onBlur"
-                labelCol={{ span: 8 }}
-                wrapperCol={{ span: 16 }}
-            >
-                <Row gutter={[5, 5]}>
-                    {fields.map(field => (
-                        <Col span={12} key={field.name}>
-                            <Form.Item
-                                label={field.label}
-                                name={field.name}
-                                validateStatus={formik.errors && formik.errors[field.name] && 'error'}
-                                help={formik.errors && formik.errors[field.name]}
-                                validateTrigger="onBlur"
+        <div style={{display: 'flex', flexDirection: 'row', gap: '50px', margin: '20px', flexWrap: 'wrap'}}>
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                style={{
+                    padding: '20px',
+                    backgroundColor: '#f8f9fa',
+                    borderRadius: '10px',
+                    flex: '0 1 400px',
+                    height: 'fit-content',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                    border: '1px solid #e9ecef'
+                }}>
+                <Typography.Text strong style={{ fontSize: '18px', color: '#2c3e50' }}>
+                    Ce formulaire vous permet d'ajouter un nouvel employé dans le système. Vous pouvez:
+                    <ul style={{ marginTop: '10px', paddingLeft: '20px' }}>
+                        <li>Saisir les informations personnelles</li>
+                        <li>Ajouter une photo d'identité</li>
+                        <li>Spécifier le poste et le département</li>
+                        <li>Définir le salaire et les conditions de travail</li>
+                    </ul>
+                </Typography.Text>
+            </motion.div>
+
+            <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5 }}
+                className='ajout_employe'
+                style={{
+                    flex: '1',
+                    maxWidth: '850px',
+                    height: '600px',
+                    backgroundColor: '#fff',
+                    padding: '40px',
+                    borderRadius: '8px',
+                    position: 'relative',
+                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
+                }}>
+                <motion.div
+                    initial={{ y: -20 }}
+                    animate={{ y: 0 }}
+                    transition={{ delay: 0.2 }}
+                >
+                    <Typography.Title>Champ formulaire</Typography.Title>
+                </motion.div>
+                <Form
+                    onFinish={formik.handleSubmit}
+                    initialValues={formik.values}
+                    validateTrigger="onBlur"
+                    labelCol={{ span: 8 }}
+                    wrapperCol={{ span: 16 }}
+                >
+                    <Row gutter={[5, 5]}>
+                        {fields.map((field, index) => (
+                            <motion.div
+                                key={field.name}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                                style={{ width: '50%' }}
                             >
-                                {field.name === 'image' ? (
-                                    <div {...getRootProps()} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                        <input {...getInputProps()} />
-                                        {imageURL && <img src={imageURL} alt="Preview" style={{ maxWidth: '100%', maxHeight: '200px' }} />}
-                                        {!imageURL && <p style={{ marginTop: '10px' }}>Déposez une image ici ou cliquez pour sélectionner</p>}
-                                    </div>
-                                ) :
-                                    field.name === 'Date_embauche' ? (
-                                        <DatePicker
-                                            style={{ width: '100%' }}
-                                            value={formik.values[field.name]}
-                                            onChange={value => formik.setFieldValue(field.name, value ? value.format('YYYY-MM-DD') : null)}
-                                            onBlur={() => formik.setFieldTouched(field.name, true)}
-                                        />
-                                    ) : field.name === 'Departement' ? (
-                                        <Select
-                                            placeholder={field.label}
-                                            value={formik.values[field.name]}
-                                            onChange={(value) => {
-                                                formik.setFieldValue(field.name, value);
-                                                handleDepartementChange(value);
-                                            }}
-                                            onBlur={() => formik.setFieldTouched(field.name, true)}
-                                        >
-
-                                            {dataSource2.map(dep => (
-                                                <Select.Option key={dep.id} value={dep.id}>
-                                                    {dep.nom_departement}
-                                                </Select.Option>
-                                            ))}
-                                        </Select>
-                                    ) : field.name === 'Poste' ? (
-                                        <Select
-                                            placeholder={field.label}
-                                            value={formik.values[field.name]}
-                                            onChange={(value) => formik.setFieldValue(field.name, value)}
-                                            onBlur={() => formik.setFieldTouched(field.name, true)}
-                                        >
-                                            {postes.map(poste => (
-                                                <Select.Option key={poste.id} value={poste.id}>
-                                                    {poste.nom_poste}
-                                                </Select.Option>
-                                            ))}
-                                        </Select>
-                                    ) : (
-                                        <Input
-                                            placeholder={field.label}
-                                            value={formik.values[field.name]}
-                                            onChange={formik.handleChange}
-                                            onBlur={formik.handleBlur}
-                                        />
-                                    )}
-
-                            </Form.Item>
-                        </Col>
-                    ))}
-                </Row>
-                <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-                    <Link to="/Employer">
-                        <Button
-                            type="danger"
-                            style={{
-                                marginRight: '35px',
-                                backgroundColor: 'rgb(200, 0, 0, 2)',
-                                color: 'white'
-                            }}
+                                <Col span={24}>
+                                    <Form.Item
+                                        label={field.label}
+                                        name={field.name}
+                                        validateStatus={formik.errors && formik.errors[field.name] && 'error'}
+                                        help={formik.errors && formik.errors[field.name]}
+                                        validateTrigger="onBlur"
+                                    >
+                                        {field.name === 'image' ? (
+                                            <div {...getRootProps()} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                                <input {...getInputProps()} />
+                                                {imageURL && <img src={imageURL} alt="Preview" style={{ maxWidth: '100%', maxHeight: '200px' }} />}
+                                                {!imageURL && <p style={{ marginTop: '10px' }}>Déposez une image ici ou cliquez pour sélectionner</p>}
+                                            </div>
+                                        ) :
+                                            field.name === 'Date_embauche' ? (
+                                                <DatePicker
+                                                    style={{ width: '100%' }}
+                                                    value={formik.values[field.name]}
+                                                    onChange={value => formik.setFieldValue(field.name, value ? value.format('YYYY-MM-DD') : null)}
+                                                    onBlur={() => formik.setFieldTouched(field.name, true)}
+                                                />
+                                            ) : field.name === 'Departement' ? (
+                                                <Select
+                                                    placeholder={field.label}
+                                                    value={formik.values[field.name]}
+                                                    onChange={(value) => {
+                                                        formik.setFieldValue(field.name, value);
+                                                        handleDepartementChange(value);
+                                                    }}
+                                                    onBlur={() => formik.setFieldTouched(field.name, true)}
+                                                >
+                                                    {dataSource2.map(dep => (
+                                                        <Select.Option key={dep.id} value={dep.id}>
+                                                            {dep.nom_departement}
+                                                        </Select.Option>
+                                                    ))}
+                                                </Select>
+                                            ) : field.name === 'Poste' ? (
+                                                <Select
+                                                    placeholder={field.label}
+                                                    value={formik.values[field.name]}
+                                                    onChange={(value) => formik.setFieldValue(field.name, value)}
+                                                    onBlur={() => formik.setFieldTouched(field.name, true)}
+                                                >
+                                                    {postes.map(poste => (
+                                                        <Select.Option key={poste.id} value={poste.id}>
+                                                            {poste.nom_poste}
+                                                        </Select.Option>
+                                                    ))}
+                                                </Select>
+                                            ) : (
+                                                <Input
+                                                    placeholder={field.label}
+                                                    value={formik.values[field.name]}
+                                                    onChange={formik.handleChange}
+                                                    onBlur={formik.handleBlur}
+                                                />
+                                            )}
+                                    </Form.Item>
+                                </Col>
+                            </motion.div>
+                        ))}
+                    </Row>
+                    <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.5 }}
                         >
-                            annuler
-                        </Button>
-                    </Link>
-                    <Button type="primary" htmlType="submit" loading={loading}>
-                        Créer
-                    </Button>
-
-                </Form.Item>
-            </Form>
+                            <Link to="/Employer">
+                                <Button
+                                    type="default"
+                                    style={{
+                                        marginRight: '35px',
+                                        backgroundColor: '#ff4d4f',
+                                        color: 'white',
+                                        border: 'none'
+                                    }}
+                                >
+                                    Annuler
+                                </Button>
+                            </Link>
+                            <Button 
+                                type="primary" 
+                                htmlType="submit" 
+                                loading={loading}
+                                style={{
+                                    backgroundColor: '#1890ff',
+                                    border: 'none'
+                                }}
+                            >
+                                Ajouter
+                            </Button>
+                        </motion.div>
+                    </Form.Item>
+                </Form>
+            </motion.div>
         </div>
     );
 }
-
 export default AjoutEmployer;

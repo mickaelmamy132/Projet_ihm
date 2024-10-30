@@ -221,12 +221,6 @@ class EmployerController extends Controller
 
     public function update_employer(Request $request, $id)
     {
-        // Log la requête brute
-        // Log::info('Requête brute:', ['input' => file_get_contents('php://input')]);
-        // Log::info('Fichiers:', $request->file());
-        // Log::info('Toutes les données:', $request->all());
-        // var_dump('vc');return ;
-        // Assurez-vous que les données sont correctement récupérées
         Log::info('Nom:', [$request->get('Nom')]);
         Log::info('Prenom:', ['Prenom' => $request->input('Prenom')]);
         Log::info('Adresse:', ['Adresse' => $request->input('Adresse')]);
