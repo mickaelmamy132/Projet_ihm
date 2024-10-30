@@ -4,7 +4,7 @@ import Getdeduction from '../../API/Getdeduction';
 import { Space, Table, Typography, Button, Popconfirm, Flex, Card, Statistic } from 'antd';
 import Search from 'antd/es/transfer/search';
 import { Link, useNavigate } from 'react-router-dom';
-import { UserOutlined } from '@ant-design/icons';
+import { UserOutlined, HeartOutlined, SecurityScanOutlined, MonitorOutlined, DeploymentUnitOutlined } from '@ant-design/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrashAlt, faMoneyBillAlt } from '@fortawesome/free-solid-svg-icons';
 import Delete_deduction from '../../API/Delete_deduction';
@@ -54,7 +54,7 @@ function Table_deduction() {
     Delete_deduction(deduction_id);
   };
   const handleSearch = (value) => {
-    setSearchText(value); // Met à jour searchText à chaque changement dans le champ de recherche
+    setSearchText(value); 
   };
 
   return (
@@ -67,10 +67,10 @@ function Table_deduction() {
         <Flex align='center' gap="large" >
           <Space direction="horizontal">
             <DashboardCard
-              icon={<UserOutlined />}
+              icon={<HeartOutlined />}
               iconStyle={{
                 color: 'white',
-                backgroundColor: 'rgb(210,0,0,1)',
+                backgroundColor: '#121212',
                 borderRadius: '8px',
                 padding: '10px'
               }}
@@ -79,10 +79,10 @@ function Table_deduction() {
             />
 
             <DashboardCard
-              icon={<UserOutlined />}
+              icon={<SecurityScanOutlined />}
               iconStyle={{
                 color: 'white',
-                backgroundColor: 'rgb(210,0,0,1)',
+                backgroundColor: '#121212',
                 borderRadius: '8px',
                 padding: '10px'
               }}
@@ -90,10 +90,10 @@ function Table_deduction() {
               value={12000}
             />
             <DashboardCard
-              icon={<UserOutlined />}
+              icon={<MonitorOutlined />}
               iconStyle={{
                 color: 'white',
-                backgroundColor: 'rgb(210,0,0,1)',
+                backgroundColor: '#121212',
                 borderRadius: '8px',
                 padding: '10px'
               }}
@@ -101,10 +101,10 @@ function Table_deduction() {
               value={120000}
             />
             <DashboardCard
-              icon={<UserOutlined />}
+              icon={<DeploymentUnitOutlined />}
               iconStyle={{
                 color: 'white',
-                backgroundColor: 'rgb(210,0,0,1)',
+                backgroundColor: '#121212',
                 borderRadius: '8px',
                 padding: '10px'
               }}
@@ -200,6 +200,7 @@ function Table_deduction() {
             style={{ flex: 1, overflowY: 'auto' }}
           />
         </Card>
+
       </Space>
     </div>
   )

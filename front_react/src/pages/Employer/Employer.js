@@ -80,7 +80,7 @@ function Employer() {
               icon={<UserOutlined />}
               iconStyle={{
                 color: 'white',
-                backgroundColor: 'rgb(210,0,0,1)',
+                backgroundColor: '#121212',
                 borderRadius: '8px',
                 padding: '10px'
               }}
@@ -92,7 +92,7 @@ function Employer() {
               icon={<UserOutlined />}
               iconStyle={{
                 color: 'white',
-                backgroundColor: 'rgb(210,0,0,1)',
+                backgroundColor: '#121212',
                 borderRadius: '8px',
                 padding: '10px'
               }}
@@ -103,7 +103,7 @@ function Employer() {
               icon={<UserOutlined />}
               iconStyle={{
                 color: 'white',
-                backgroundColor: 'rgb(210,0,0,1)',
+                backgroundColor: '#121212',
                 borderRadius: '8px',
                 padding: '10px'
               }}
@@ -114,7 +114,7 @@ function Employer() {
               icon={<UserOutlined />}
               iconStyle={{
                 color: 'white',
-                backgroundColor: 'rgb(210,0,0,1)',
+                backgroundColor: '#121212',
                 borderRadius: '8px',
                 padding: '10px'
               }}
