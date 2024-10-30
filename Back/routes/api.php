@@ -30,7 +30,7 @@ Route::get('/', [EmployerController::class, 'index']);
 Route::get('/dashboard', [EmployerController::class, 'dash']);
 Route::get('/postes/{id}', [EmployerController::class, 'Poste']);
 Route::post('/AjoutEmployer',[EmployerController::class,'Add_employer']);
-Route::put('/modif_employer/{id}',[EmployerController::class,'update_employer']);
+Route::post('/modif_employer/{id}',[EmployerController::class,'update_employer']);
 Route::get('search_employers/', [EmployerController::class,'Search_employers']);
 Route::delete('/supprimer_employer/{id}', [EmployerController::class, 'delete_Employer']);
 

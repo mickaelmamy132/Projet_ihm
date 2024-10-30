@@ -66,7 +66,7 @@ function Ajout_deduction() {
       console.log(values);
       try {
         const response = await axios.post('http://127.0.0.1:8000/api/ajoutDeduction', values);
-        toast.success('Ajout réussi!', {
+        toast.success('Ajout deduction réussi!', {
           position: 'top-center',
           autoClose: 1500,
           hideProgressBar: false,

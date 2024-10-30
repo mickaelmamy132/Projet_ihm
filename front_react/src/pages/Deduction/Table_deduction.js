@@ -23,27 +23,28 @@ function Table_deduction() {
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState('');
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const { deduction, type } = await Getdeduction();
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const { deduction, type } = await Getdeduction();
+      if (searchText.trim() !== '') {
+        const response = await axios.get(`http://127.0.0.1:8000/api/search_deductions?search=${encodeURIComponent(searchText)}`);
+        setDataSource(response.data);
+      } else {
         setDataSource(deduction);
-        setDataSource2(type);
-
-        if (searchText.trim() !== '') {
-          const response = await axios.get(`http://127.0.0.1:8000/api/search_deductions?search=${encodeURIComponent(searchText)}`);
-          setDataSource(response.data);
-        }
-
-        setLoading(false);
-      } catch (error) {
-        console.error('Une erreur s\'est produite lors de la récupération des données:', error);
-        setLoading(false);
       }
-    };
+      setDataSource2(type);
+      setLoading(false);
+    } catch (error) {
+      console.error('Une erreur s\'est produite lors de la récupération des données:', error);
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
+    const interval = setInterval(fetchData, 5000); // Rafraîchit toutes les 5 secondes
+    return () => clearInterval(interval);
   }, [searchText]);
 
   const handleEdit = (deduction_id) => {
@@ -51,9 +52,12 @@ function Table_deduction() {
     setSelectedDeduction(deduction);
     navigate('/modif_deduction', { state: { deduction } });
   };
-  const handleDelete = (deduction_id) => {
-    Delete_deduction(deduction_id);
+  
+  const handleDelete = async (deduction_id) => {
+    await Delete_deduction(deduction_id);
+    fetchData(); // Rafraîchit les données après la suppression
   };
+  
   const handleSearch = (value) => {
     setSearchText(value); 
   };

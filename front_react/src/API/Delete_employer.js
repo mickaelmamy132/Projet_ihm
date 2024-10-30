@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const Delete_employer = async (ID_employer) => {
+const Delete_employer = async (ID_employer, navigate) => {
     try {
         await axios.delete(`http://127.0.0.1:8000/api/supprimer_employer/${ID_employer}`);
         toast.success('suppression réussi!', {
@@ -15,10 +15,8 @@ const Delete_employer = async (ID_employer) => {
             style: { backgroundColor: 'green', color: 'white' },
             bodyStyle: { fontSize: '16px' },
             progressStyle: { backgroundColor: 'white' },
+            onClose: () => navigate('/Employer'),
         });
-        setTimeout(() => {
-            window.location.reload();
-        }, 1900); 
     } catch (error) {
         toast.error('suppression echouer!', {
             position: 'top-center',
@@ -27,7 +25,8 @@ const Delete_employer = async (ID_employer) => {
             closeOnClick: true,
             pauseOnHover: true,
             draggable: true,
-        });
+            
+        });        
     }
 };
 export default Delete_employer

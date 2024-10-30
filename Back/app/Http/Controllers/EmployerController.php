@@ -221,64 +221,51 @@ class EmployerController extends Controller
 
     public function update_employer(Request $request, $id)
     {
-        Log::info('Nom:', [$request->get('Nom')]);
-        Log::info('Prenom:', ['Prenom' => $request->input('Prenom')]);
-        Log::info('Adresse:', ['Adresse' => $request->input('Adresse')]);
-        Log::info('Tel:', ['Tel' => $request->input('Tel')]);
-        Log::info('Email:', ['Email' => $request->input('Email')]);
-        Log::info('Date_embauche:', ['Date_embauche' => $request->input('Date_embauche')]);
-        Log::info('Departement:', ['Departement' => $request->input('Departement')]);
-        Log::info('Poste:', ['Poste' => $request->input('Poste')]);
-        Log::info('Image:', ['image' => $request->file('image')]);
-
-        $request->validate([
+         $request->validate([
             'Nom' => 'required|string',
             'Prenom' => 'required|string',
             'Adresse' => 'required|string',
             'Tel' => 'required|numeric',
             'Email' => 'required|email',
-            'Date_embauche' => 'required|date|date_format:Y-m-d',
             'Departement' => 'required|string',
             'Poste' => 'required|string',
             'image' => 'nullable|file|image|mimes:jpeg,png,jpg,gif',
         ]);
 
+       
 
-        error_log(print_r($request->all(), true));
+        $employer = Employer::findOrFail($id);
 
-        // $employer = Employer::findOrFail($id);
+        if ($request->hasFile('image')) {
+            if ($employer->image) {
+                $oldImagePath = public_path('employe-images/' . $employer->image);
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath);
+                }
+            }
 
-        // if ($request->hasFile('image')) {
-        //     if ($employer->image) {
-        //         $oldImagePath = public_path('employe-images/' . $employer->image);
-        //         if (file_exists($oldImagePath)) {
-        //             unlink($oldImagePath);
-        //         }
-        //     }
+            $extension = $request->file('image')->getClientOriginalExtension();
+            $imageName = Str::uuid() . '.' . $extension;
 
-        //     $extension = $request->file('image')->getClientOriginalExtension();
-        //     $imageName = Str::uuid() . '.' . $extension;
+            // Déplacer la nouvelle image
+            $request->file('image')->move(public_path('employe-images'), $imageName);
 
-        //     // Déplacer la nouvelle image
-        //     $request->file('image')->move(public_path('employe-images'), $imageName);
+            $employer->image = $imageName;
+        }
 
-        //     $employer->image = $imageName;
-        // }
+        // Mettre à jour les autres champs
+        $employer->Nom = $request->Nom;
+        $employer->Prenom = $request->Prenom;
+        $employer->Adresse = $request->Adresse;
+        $employer->Tel = $request->Tel;
+        $employer->Email = $request->Email;
+        $employer->Date_embauche = $employer->Date_embauche;
+        $employer->Departement = $request->Departement;
+        $employer->Poste = $request->Poste;
+        $employer->Salaire_base = $employer->Salaire_base;
+        $employer->save();
 
-        // // Mettre à jour les autres champs
-        // $employer->Nom = $request->Nom;
-        // $employer->Prenom = $request->Prenom;
-        // $employer->Adresse = $request->Adresse;
-        // $employer->Tel = $request->Tel;
-        // $employer->Email = $request->Email;
-        // $employer->Date_embauche = $request->Date_embauche;
-        // $employer->Departement = $request->Departement;
-        // $employer->Poste = $request->Poste;
-        // $employer->Salaire_base = $request->Salaire_base;
-        // // Sauvegarder les changements dans la base de données
-        // $employer->save();
-
-        // return response()->json(['employe' => $employer], 200);
+        return response()->json(['employe' => $employer], 200);
     }
 
     public function delete_Employer($id)

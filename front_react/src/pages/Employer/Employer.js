@@ -20,6 +20,7 @@ function Employer() {
   const [loading, setLoading] = useState(false);
   const [selectedEmploye, setSelectedEmploye] = useState(null);
   const navigate = useNavigate();
+
   const [searchText, setSearchText] = useState('');
 
   const handleEdit = (ID_employer) => {
@@ -34,34 +35,42 @@ function Employer() {
     navigate('/view_employer', { state: { employe } });
   };
 
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const { employers, departe, count_employers_Ressource, count_employers_finance, count_employers_marketing, count_employers_ventes } = await getEmployer();
+      setDataSource(employers);
+      setDataSource2(departe);
+      setRessource(count_employers_Ressource);
+      setFinance(count_employers_finance);
+      setMarketing(count_employers_marketing);
+      setVentes(count_employers_ventes);
+
+      if(searchText.trim() !== '') {
+        const response = await axios.get(`http://127.0.0.1:8000/api/search_employers?search=${encodeURIComponent(searchText)}`);
+        setDataSource(response.data);
+      }
+    }
+    catch (error) {
+      console.error('Une erreur s\'est produite lors de la récupération des données:', error);
+    }
+    finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    console.log('Valeur de searchText mise à jour :', searchText);
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const { employers, departe, count_employers_Ressource, count_employers_finance, count_employers_marketing, count_employers_ventes } = await getEmployer();
-        setDataSource(employers);
-        setDataSource2(departe);
-        setRessource(count_employers_Ressource);
-        setFinance(count_employers_finance);
-        setMarketing(count_employers_marketing);
-        setVentes(count_employers_ventes);
+    const debounceTimer = setTimeout(() => {
+      fetchData();
+    }, 500);
 
-        if(searchText.trim() !== '') {
-          const response = await axios.get(`http://127.0.0.1:8000/api/search_employers?search=${encodeURIComponent(searchText)}`);
-          setDataSource(response.data);
-        }
-        setLoading(false);
-      }
-      catch (error) {
-        console.error('Une erreur s\'est produite lors de la récupération des données:', error);
-      }
-    };
-    fetchData()
+    return () => clearTimeout(debounceTimer);
   }, [searchText]);
+  
 
-  const handleDelete = (ID_employer) => {
-    Delete_employer(ID_employer);
+  const handleDelete = async (ID_employer) => {
+    await Delete_employer(ID_employer, navigate);
+    fetchData();
   };
   
   const handleSearch = (value) => {

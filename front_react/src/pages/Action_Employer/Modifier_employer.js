@@ -14,6 +14,8 @@ import 'react-toastify/dist/ReactToastify.css';
 const Modifier_employer = () => {
     const location = useLocation();
     const employe = location.state.employe;
+    const navigate = useNavigate();
+
 
     const [form] = Form.useForm();
 
@@ -23,71 +25,79 @@ const Modifier_employer = () => {
         }
     }, [employe]);
 
-    const handleSubmit = async (values) => {
-        try {
-            if (employe && employe.ID_employer) {
-                const formData = new FormData();
-                
-                // Parcourir toutes les valeurs du formulaire
-                for (const key in values) {
-                    if (values[key] !== undefined && values[key] !== null) {
-                        if (key === 'image') {
-                            // Vérifier si une nouvelle image a été sélectionnée
-                            if (values[key] && values[key][0] && values[key][0].originFileObj) {
-                                formData.append(key, values[key][0].originFileObj);
-                            }
-                        } else {
-                            formData.append(key, values[key]);
-                        }
-                    }
-                }
 
-                // Ajouter l'ID de l'employé au formData
-                formData.append('ID_employer', employe.ID_employer);
-
-                const response = await axios.put(`http://127.0.0.1:8000/api/modif_employer/${employe.ID_employer}`, formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    }
-                });
-
-                toast.success('Modification réussie!', {
-                    position: 'top-center',
-                    autoClose: 1500,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    style: { backgroundColor: 'green', color: 'white' },
-                    bodyStyle: { fontSize: '16px' },
-                    progressStyle: { backgroundColor: 'white' },
-                    onClose: () => navigate('/Employer'),
-                });
-                form.resetFields();
-                console.log('Modification réussie');
-            } else {
-                console.error('Erreur : ID de l\'employé non défini');
-            }
-        } catch (error) {
-            console.error('Erreur lors de la modification :', error);
-            toast.error('Erreur lors de la modification');
-        }
-    };
 
     const [selectedImage, setSelectedImage] = useState(employe ? employe.image_url : null);
+    const [isImageChanged, setIsImageChanged] = useState(false); // Suivi de la modification de l'image
+
 
     const handleImageChange = (info) => {
         if (info.file) {
             const imageURL = URL.createObjectURL(info.file.originFileObj);
             setSelectedImage(imageURL);
+            setIsImageChanged(true); // Marque l'image comme modifiée
         }
     };
-
     const normFile = (e) => {
         if (Array.isArray(e)) {
             return e;
         }
         return e?.fileList;
+    };
+
+    const handleSubmit = async (values) => {
+        try {
+            if (employe && employe.ID_employer) {
+                const formData = new FormData();
+
+                // Parcourir toutes les valeurs du formulaire
+                Object.keys(values).forEach((key) => {
+                    if (values[key] !== undefined && values[key] !== null) {
+                        // Ajouter l'image uniquement si elle a été modifiée
+                        if (key === 'image' && isImageChanged && values[key][0]?.originFileObj) {
+                            formData.append(key, values[key][0].originFileObj);
+                        } else if (key !== 'image') {
+                            formData.append(key, values[key]);
+                        }
+                    }
+                });
+
+                // Ajouter l'ID de l'employé
+                formData.append('ID_employer', employe.ID_employer);
+
+                // Afficher les données pour vérifier leur contenu avant l'envoi
+                formData.forEach((value, key) => {
+                    console.log(`${key}: ${value}`);
+                });
+
+                try {
+                    const response = await axios.post(`http://127.0.0.1:8000/api/modif_employer/${employe.ID_employer}`, formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        },
+                    });
+                    toast.success('modification réussi!', {
+                        position: 'top-center',
+                        autoClose: 1500,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        style: { backgroundColor: 'green', color: 'white' },
+                        bodyStyle: { fontSize: '16px' },
+                        progressStyle: { backgroundColor: 'white' },
+                        onClose: () => navigate('/Employer'),
+                    });
+                    
+                } catch (error) {
+                    console.error("Erreur lors de la modification :", error);
+                }
+            } else {
+                console.error('Erreur : ID de l\'employé non défini');
+            }
+        } catch (error) {
+            console.error('Erreur lors de la modification :', error);
+        }
     };
 
     return (

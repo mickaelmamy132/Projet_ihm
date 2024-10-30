@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, Button, Typography, Row, Col, Upload, DatePicker } from 'antd';
+import { Form, Input, Button, Typography, Row, Col, DatePicker } from 'antd';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import axios from 'axios'
@@ -7,7 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
 import { Select } from 'antd';
 import getEmployer from '../../API/getEmployer';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { motion } from "framer-motion";
 
@@ -156,8 +156,7 @@ function AjoutEmployer() {
                 Object.entries(values).forEach(([key, value]) => {
                     formData.append(key, value);
                 });
-                formData.append('image', values.image);
-                console.log(formData);
+                
                 const response = await axios.post('http://127.0.0.1:8000/api/AjoutEmployer', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
@@ -264,7 +263,9 @@ function AjoutEmployer() {
                                     >
                                         {field.name === 'image' ? (
                                             <div {...getRootProps()} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                                <input {...getInputProps()} />
+                                                <input {...getInputProps({
+                                                    accept: 'image/*'
+                                                })} />
                                                 {imageURL && <img src={imageURL} alt="Preview" style={{ maxWidth: '100%', maxHeight: '200px' }} />}
                                                 {!imageURL && <p style={{ marginTop: '10px' }}>Déposez une image ici ou cliquez pour sélectionner</p>}
                                             </div>
@@ -353,6 +354,5 @@ function AjoutEmployer() {
                 </Form>
             </motion.div>
         </div>
-    );
-}
+    );}
 export default AjoutEmployer;
