@@ -13,8 +13,8 @@ function Table_payement() {
     const [loading, setLoading] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [selectedPaymentDetails, setSelectedPaymentDetails] = useState(null);
-    const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-    const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+    const [selectedMonth, setSelectedMonth] = useState(null);
+    const [selectedYear, setSelectedYear] = useState(null);
 
     const showModal = () => {
         setIsModalVisible(true);
@@ -31,23 +31,31 @@ function Table_payement() {
     };
 
     const filterData = () => {
-        const filtered = dataSource.filter(payment => {
-            const paymentDate = new Date(payment.payment_date);
-            return paymentDate.getMonth() + 1 === selectedMonth && 
-                   paymentDate.getFullYear() === selectedYear;
-        });
-        setFilteredData(filtered);
+        if (selectedMonth && selectedYear) {
+            const filtered = dataSource.filter(payment => {
+                const paymentDate = new Date(payment.payment_date);
+                return paymentDate.getMonth() + 1 === selectedMonth &&
+                    paymentDate.getFullYear() === selectedYear;
+            });
+            setFilteredData(filtered);
+        } else {
+            // Affiche tous les paiements si aucun filtre n'est sélectionné
+            setFilteredData(dataSource);
+        }
     };
 
     useEffect(() => {
         setLoading(true);
-        GetPayement().then((res) => {
-            setDataSource(res);
-            setLoading(false);
-        }).catch((error) => {
-            console.error('Une erreur s\'est produite lors de la récupération des employés :', error);
-            setLoading(false);
-        });
+        GetPayement()
+            .then((res) => {
+                console.log(res);
+                setDataSource(res);
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.error('Erreur lors de la récupération des paiements :', error);
+                setLoading(false);
+            });
     }, []);
 
     useEffect(() => {
@@ -55,6 +63,7 @@ function Table_payement() {
     }, [dataSource, selectedMonth, selectedYear]);
 
     const months = [
+        { value: null, label: 'Tous les mois' },
         { value: 1, label: 'Janvier' },
         { value: 2, label: 'Février' },
         { value: 3, label: 'Mars' },
@@ -69,10 +78,10 @@ function Table_payement() {
         { value: 12, label: 'Décembre' }
     ];
 
-    const years = Array.from({ length: 10 }, (_, i) => ({
+    const years = [{ value: null, label: 'Toutes les années' }, ...Array.from({ length: 10 }, (_, i) => ({
         value: new Date().getFullYear() - i,
         label: (new Date().getFullYear() - i).toString()
-    }));
+    }))];
 
     return (
         <motion.div
@@ -139,6 +148,7 @@ function Table_payement() {
                                 onChange={value => setSelectedYear(value)}
                                 options={years}
                             />
+
                             <motion.div whileHover={{ scale: 1.05 }}>
                                 <Link to="/Payement" style={{
                                     background: 'linear-gradient(135deg, #52c41a, #389e0d)',
@@ -162,7 +172,19 @@ function Table_payement() {
                             },
                             {
                                 title: 'Matricule Employer',
-                                dataIndex: "employer_id",
+                                dataIndex: ["employer", "ID_employer"],
+                            },
+                            {
+                                title: 'Nom',
+                                dataIndex: ["employer", "Nom"],
+                            },
+                            {
+                                title: 'Prénom',
+                                dataIndex: ["employer", "Prenom"],
+                            },
+                            {
+                                title: 'Salaire de base',
+                                dataIndex: ["employer", "Salaire_base"],
                             },
                             {
                                 title: 'Salaire',
@@ -186,13 +208,13 @@ function Table_payement() {
                                 render: (id) => (
                                     <motion.div whileHover={{ scale: 1.05 }}>
                                         <PaymentModale isVisible={isModalVisible} onCancel={handleCancel} paymentDetails={selectedPaymentDetails} />
-                                        <Button 
-                                            style={{ 
+                                        <Button
+                                            style={{
                                                 background: 'linear-gradient(135deg, #1890ff, #096dd9)',
                                                 color: 'white',
                                                 border: 'none'
-                                            }} 
-                                            size="middle" 
+                                            }}
+                                            size="middle"
                                             onClick={() => handlePrint(id)}
                                         >
                                             <FontAwesomeIcon icon={faPrint} /> Imprimer
@@ -203,10 +225,7 @@ function Table_payement() {
                         ]}
                         loading={loading}
                         dataSource={filteredData.map((item, index) => ({ ...item, key: index }))}
-                        pagination={{
-                            pageSize: 5,
-                            style: { marginTop: '20px' }
-                        }}
+                        pagination={{ pageSize: 5, style: { marginTop: '20px' } }}
                     />
                 </Space>
             </Card>

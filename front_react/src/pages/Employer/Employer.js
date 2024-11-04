@@ -46,7 +46,7 @@ function Employer() {
       setMarketing(count_employers_marketing);
       setVentes(count_employers_ventes);
 
-      if(searchText.trim() !== '') {
+      if (searchText.trim() !== '') {
         const response = await axios.get(`http://127.0.0.1:8000/api/search_employers?search=${encodeURIComponent(searchText)}`);
         setDataSource(response.data);
       }
@@ -66,13 +66,13 @@ function Employer() {
 
     return () => clearTimeout(debounceTimer);
   }, [searchText]);
-  
+
 
   const handleDelete = async (ID_employer) => {
     await Delete_employer(ID_employer, navigate);
     fetchData();
   };
-  
+
   const handleSearch = (value) => {
     setSearchText(value);
   };
@@ -82,10 +82,10 @@ function Employer() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="p-6 bg-gray-50"
+      className="p-6 pt-2 bg-gray-50"
     >
-      <motion.div 
-        className="mb-8 text-center"
+      <motion.div
+        className="mb-6 text-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
@@ -93,7 +93,7 @@ function Employer() {
         <Typography.Title level={4} className="text-2xl font-bold text-gray-800">
           Listes des employer par type de departement
         </Typography.Title>
-        <Flex align='center' gap="large" className="justify-center mt-4">
+        <Flex align='center' gap="large" className="justify-center mt-3">
           <Space direction="horizontal" className="flex-wrap gap-4">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <DashboardCard
@@ -152,7 +152,7 @@ function Employer() {
       </motion.div>
 
       <Space direction='horizontal' className="flex w-full gap-6">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
@@ -164,11 +164,11 @@ function Employer() {
               <Link to="/Ajout_employer" className="inline-block bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors duration-200">
                 Ajouter
               </Link>
-              <Search 
-                placeholder='recherche' 
-                allowClear 
+              <Search
+                placeholder='recherche'
+                allowClear
                 onChange={(e) => handleSearch(e.target.value)}
-                className="w-full max-w-md" 
+                className="w-full max-w-md"
               />
               <Table
                 columns={[
@@ -216,14 +216,14 @@ function Employer() {
                     dataIndex: 'ID_employer',
                     render: (ID_employer) => (
                       <Space>
-                        <Button 
-                          className="text-blue-600 hover:text-blue-800" 
+                        <Button
+                          className="text-blue-600 hover:text-blue-800"
                           onClick={() => handleview(ID_employer)}
                         >
                           <FontAwesomeIcon icon={faEye} />
                         </Button>
-                        <Button 
-                          className="text-orange-600 hover:text-orange-800" 
+                        <Button
+                          className="text-orange-600 hover:text-orange-800"
                           onClick={() => handleEdit(ID_employer)}
                         >
                           <FontAwesomeIcon icon={faEdit} />
@@ -245,15 +245,16 @@ function Employer() {
                 loading={loading}
                 dataSource={dataSource.map((item, index) => ({ ...item, key: index }))}
                 pagination={{
-                  pageSize: 5,
+                  pageSize: 3,
                 }}
-                className="overflow-x-auto"
+                // className="overflow-x-auto"
+                // scroll={{ y: 400 }}
               />
             </Space>
           </Card>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.4 }}
@@ -281,10 +282,10 @@ function DashboardCard({ title, value, icon, iconStyle }) {
   return (
     <Card className="shadow-lg hover:shadow-xl transition-shadow duration-200">
       <Space>
-        <Statistic 
-          title={<span className="text-gray-600">{title}</span>} 
-          value={value} 
-          prefix={React.cloneElement(icon, { style: iconStyle })} 
+        <Statistic
+          title={<span className="text-gray-600">{title}</span>}
+          value={value}
+          prefix={React.cloneElement(icon, { style: iconStyle })}
           className="font-semibold"
         />
       </Space>

@@ -24,11 +24,12 @@ function PaymentModale({ isVisible, onCancel, paymentDetails }) {
     doc.setFont('helvetica', 'bold');
 
     doc.text(`Reference: ${paymentDetails.id}`, 10, 30);
-    doc.text(`Employer: ${paymentDetails.employer_id}`, 10, 40);
-    doc.text(`Salaire: ${paymentDetails.amount}`, 10, 50);
-    doc.text(`Date de payment: ${paymentDetails.payment_date}`, 10, 60);
-    doc.text(`Deduction: ${paymentDetails.deduction}`, 10, 70);
-    doc.text(`salaire Net: ${paymentDetails.amount}`, 10, 80);
+    doc.text(`Employer matriculer: ${paymentDetails.employer.ID_employer}`, 10, 40);
+    doc.text(`Nom: ${paymentDetails.employer.Nom}`, 10, 50);
+    doc.text(`Salaire: ${paymentDetails.amount}`, 10, 60);
+    doc.text(`Date de payment: ${paymentDetails.payment_date}`, 10, 70);
+    doc.text(`Deduction: ${paymentDetails.deduction}`, 10, 80);
+    doc.text(`salaire Net: ${paymentDetails.amount}`, 10, 90);
 
     doc.text(`Signature caisse`, 20, 150);
     doc.text(`Signature employer`, 150, 150);
@@ -77,7 +78,10 @@ function PaymentModale({ isVisible, onCancel, paymentDetails }) {
                 <span className="font-semibold">Reference:</span> {paymentDetails.id}
               </motion.p>
               <motion.p className="text-gray-700 mb-2">
-                <span className="font-semibold">Employer:</span> {paymentDetails.employer_id}
+                <span className="font-semibold">Employer matricler:</span> {paymentDetails.employer.ID_employer}
+              </motion.p>
+              <motion.p className="text-gray-700 mb-2">
+                <span className="font-semibold">Nom:</span> {paymentDetails.employer.Nom}
               </motion.p>
               <motion.p className="text-gray-700 mb-2">
                 <span className="font-semibold">Salaire:</span> {paymentDetails.salaire}

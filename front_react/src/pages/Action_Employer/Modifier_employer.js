@@ -9,39 +9,68 @@ import moment from 'moment';
 import { toast, ToastContainer } from 'react-toastify';
 import { motion } from "framer-motion";
 import 'react-toastify/dist/ReactToastify.css';
+import getEmployer from '../../API/getEmployer';
+import { Select } from 'antd';
+
 
 
 const Modifier_employer = () => {
     const location = useLocation();
-    const employe = location.state.employe;
+    const employe = location.state?.employe;
     const navigate = useNavigate();
-
-
     const [form] = Form.useForm();
+
+    const [selectedImage, setSelectedImage] = useState(employe?.image_url || null);
+    const [isImageChanged, setIsImageChanged] = useState(false);
+    const [dataSource2, setDataSource2] = useState([]);
+    const [postes, setPostes] = useState([]);
+    const [selectedDepartement, setSelectedDepartement] = useState(null);
+    const [selectedPoste, setSelectedPoste] = useState(null);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const { departe } = await getEmployer();
+                setDataSource2(departe);
+            } catch (error) {
+                toast.error("Erreur lors de la récupération des départements", { position: 'top-center' });
+            }
+        };
+        fetchData();
+    }, []);
 
     useEffect(() => {
         if (employe) {
-            form.setFieldsValue(employe);
+            form.setFieldsValue({
+                ...employe,
+
+                Departement:employe.Departement,
+                Poste: employe.Poste
+            });
+            setSelectedDepartement(employe.Departement);
+            setSelectedPoste(employe.Poste);
         }
-    }, [employe]);
+    }, [employe, form]);
 
-
-
-    const [selectedImage, setSelectedImage] = useState(employe ? employe.image_url : null);
-    const [isImageChanged, setIsImageChanged] = useState(false); // Suivi de la modification de l'image
-
+    const handleDepartementChange = async (value) => {
+        setSelectedDepartement(value);
+        try {
+            const response = await axios.get(`http://127.0.0.1:8000/api/postes/${value}`);
+            setPostes(response.data.postes);
+        } catch (error) {
+            toast.error('Erreur lors de la récupération des postes');
+        }
+    };
 
     const handleImageChange = (info) => {
         if (info.file) {
             const imageURL = URL.createObjectURL(info.file.originFileObj);
             setSelectedImage(imageURL);
-            setIsImageChanged(true); // Marque l'image comme modifiée
+            setIsImageChanged(true);
         }
     };
+
     const normFile = (e) => {
-        if (Array.isArray(e)) {
-            return e;
-        }
+        if (Array.isArray(e)) return e;
         return e?.fileList;
     };
 
@@ -88,7 +117,7 @@ const Modifier_employer = () => {
                         progressStyle: { backgroundColor: 'white' },
                         onClose: () => navigate('/Employer'),
                     });
-                    
+
                 } catch (error) {
                     console.error("Erreur lors de la modification :", error);
                 }
@@ -282,11 +311,21 @@ const Modifier_employer = () => {
                                 transition={{ duration: 0.5, delay: 0.7 }}
                             >
                                 <Form.Item
-                                    label="Departememt"
+                                    label="Département"
                                     name="Departement"
-                                    rules={[{ required: true, message: 'Departement est requis' }]}
+                                    rules={[{ required: true, message: 'Département est requis' }]}
                                 >
-                                    <Input placeholder="Departement" />
+                                    <Select
+                                        placeholder="Sélectionner un département"
+                                        value={selectedDepartement} // Utilisation de selectedDepartement pour la valeur
+                                        onChange={handleDepartementChange}
+                                    >
+                                        {dataSource2.map(dep => (
+                                            <Select.Option key={dep.id} value={dep.id}>
+                                                {dep.nom_departement}
+                                            </Select.Option>
+                                        ))}
+                                    </Select>
                                 </Form.Item>
                             </motion.div>
                         </Col>
@@ -300,9 +339,22 @@ const Modifier_employer = () => {
                                 <Form.Item
                                     label="Poste"
                                     name="Poste"
-                                    rules={[{ required: true, message: 'Post est requis' }]}
+                                    rules={[{ required: true, message: 'Poste est requis' }]}
                                 >
-                                    <Input placeholder="Poste" />
+                                    <Select
+                                        placeholder="Sélectionner un poste"
+                                        value={selectedPoste} // Utilisation de selectedPoste pour la valeur
+                                        onChange={(value) => {
+                                            setSelectedPoste(value);
+                                            form.setFieldValue('Poste', value);
+                                        }}
+                                    >
+                                        {postes.map(poste => (
+                                            <Select.Option key={poste.id} value={poste.id}>
+                                                {poste.nom_poste}
+                                            </Select.Option>
+                                        ))}
+                                    </Select>
                                 </Form.Item>
                             </motion.div>
                         </Col>

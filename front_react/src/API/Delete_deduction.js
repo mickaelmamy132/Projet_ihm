@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import { Link, useNavigate } from 'react-router-dom';
+
 
 const Delete_deduction = async (deduction_id, navigate) => {
     try {
@@ -14,7 +16,6 @@ const Delete_deduction = async (deduction_id, navigate) => {
             style: { backgroundColor: 'green', color: 'white' },
             bodyStyle: { fontSize: '16px' },
             progressStyle: { backgroundColor: 'white' },
-            onClose: () => navigate('/table_deduction'),
           });
     } catch (error) {
         console.error('Erreur lors de la suppression du deduction :', error);

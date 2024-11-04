@@ -268,14 +268,23 @@ class EmployerController extends Controller
         return response()->json(['employe' => $employer], 200);
     }
 
-    public function delete_Employer($id)
+    public function delete_Employers($id)
     {
+        // Log::info("Received ID: " . $id);
         try {
-            $employer = Employer::find($id);
+            $employer = Employer::findOrFail($id);
+            // Supprimer l'image si elle existe
+            if ($employer->image) {
+                $imagePath = public_path('employe-images/' . $employer->image);
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
+            }
+           
             $employer->delete();
             return response()->json(['message' => 'Employé supprimé avec succès'], 200);
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Une erreur s\'est produite lors de la suppression de l\'employé'], 500);
+            return response()->json(['message' => 'Erreur lors de la suppression'], 500);
         }
     }
 

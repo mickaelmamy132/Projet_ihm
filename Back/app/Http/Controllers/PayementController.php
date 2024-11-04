@@ -13,7 +13,7 @@ class PayementController extends Controller
 {
     public function Payement_all()
     {
-        $payement = Payement::all();
+        $payement = Payement::with('employer')->get();
         return response()->json(['payement' => $payement]);
     }
 
@@ -23,9 +23,9 @@ class PayementController extends Controller
             'amount' => 'required|numeric',
             'payment_date' => 'required|date',
             'employer_id' => 'required|exists:employers,ID_employer',
-            'deductions' => 'required|array',
-            'deductions.*.type' => 'required|array',
-            'deductions.*.amount' => 'required|array',
+            'deductions' => 'nullable|array',
+            'deductions.*.type' => 'nullable|array',
+            'deductions.*.amount' => 'nullable|array',
         ]);
 
         $employer = Employer::findOrFail($validatedData['employer_id']);

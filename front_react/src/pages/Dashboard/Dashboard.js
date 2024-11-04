@@ -1,10 +1,10 @@
-import { Card, Space, Statistic, Icon } from 'antd'
+import { Card, Space, Statistic } from 'antd'
 import { UserOutlined } from '@ant-design/icons';
 import Typography from 'antd/es/typography/Typography'
 import React from 'react'
 import { useEffect, useRef, useState } from 'react';
 import Chart from 'chart.js/auto';
-import { faBorderStyle } from '@fortawesome/free-solid-svg-icons';
+import { motion } from 'framer-motion';
 import GetDash from '../../API/GetDash';
 
 function Dashboard() {
@@ -15,10 +15,6 @@ function Dashboard() {
   const [Finance, setFinance] = useState([]);
   const [Marketing, setMarketing] = useState([]);
   const [Ventes, setVentes] = useState([]);
-
-
-
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,7 +34,6 @@ function Dashboard() {
         setMarketing(count_employers_marketing);
         setVentes(count_employers_ventes);
 
-
         const ctx = chartRef.current.getContext('2d');
         const myChart = new Chart(ctx, {
           type: 'line',
@@ -50,15 +45,25 @@ function Dashboard() {
                 data: data,
                 backgroundColor: 'rgba(255, 255, 255, 1)',
                 borderColor: 'rgba(75,192,192,1)',
-                borderWidth: 1,
+                borderWidth: 2,
+                tension: 0.4
               },
             ],
           },
           options: {
+            responsive: true,
             scales: {
               y: {
                 beginAtZero: true,
+                grid: {
+                  color: 'rgba(200, 200, 200, 0.2)'
+                }
               },
+              x: {
+                grid: {
+                  color: 'rgba(200, 200, 200, 0.2)'
+                }
+              }
             },
             plugins: {
               legend: {
@@ -66,6 +71,10 @@ function Dashboard() {
                 position: 'top',
               },
             },
+            animation: {
+              duration: 2000,
+              easing: 'easeInOutQuart'
+            }
           },
         });
 
@@ -79,24 +88,30 @@ function Dashboard() {
                 label: 'Total',
                 data: data2,
                 backgroundColor: [
-                  'rgba(255, 99, 132, 0.5)',   // Rouge
-                  'rgba(54, 162, 235, 0.5)',   // Bleu
-                  'rgba(255, 206, 86, 0.5)',   // Jaune
-                  'rgba(75, 192, 192, 0.5)',   // Vert
-                  'rgba(153, 102, 255, 0.5)',  // Violet
+                  'rgba(255, 99, 132, 0.7)',
+                  'rgba(54, 162, 235, 0.7)',
+                  'rgba(255, 206, 86, 0.7)',
+                  'rgba(75, 192, 192, 0.7)',
+                  'rgba(153, 102, 255, 0.7)',
                 ],
                 borderColor: 'rgba(255, 255, 255, 1)',
-                borderWidth: 1,
+                borderWidth: 2,
               },
             ],
           },
           options: {
+            responsive: true,
             plugins: {
               legend: {
                 display: true,
                 position: 'bottom',
               },
             },
+            animation: {
+              animateRotate: true,
+              animateScale: true,
+              duration: 2000
+            }
           },
         });
 
@@ -113,96 +128,149 @@ function Dashboard() {
   }, []);
 
   return (
-    <div style={{ background: "", marginTop: '-15px' }}>
-      <Typography.Title level={4}>Dashboard</Typography.Title>
-      <div style={{ width: '100%', marginLeft: '15px', flex: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Space direction="horizontal">
-          <DashboardCard
-            icon={<UserOutlined />}
-            iconStyle={{
-              color: 'white',
-              backgroundColor: '#121212',
-              borderRadius: '8px',
-              padding: '10px'
-            }}
-            title="Effectifs de tous les employers"
-            value={countsEmployer}
-          />
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      style={{ background: "", marginTop: '-15px', padding: '20px' }}
+    >
+      <motion.div
+        initial={{ x: -20 }}
+        animate={{ x: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Typography.Title level={4}>Dashboard</Typography.Title>
+      </motion.div>
 
-
-          <DashboardCard
-            icon={<UserOutlined />}
-            iconStyle={{
-              color: 'white',
-              backgroundColor: '#121212',
-              borderRadius: '8px',
-              padding: '10px'
-            }}
-            title="Resource humaine"
-            value={Resource} />
-
-          <DashboardCard
-            icon={<UserOutlined />}
-            iconStyle={{
-              color: 'white',
-              backgroundColor: '#121212',
-              borderRadius: '8px',
-              padding: '10px'
-            }}
-            title="Finance"
-            value={Finance} />
-
-          <DashboardCard
-            icon={<UserOutlined />}
-            iconStyle={{
-              color: 'white',
-              backgroundColor: '#121212',
-              borderRadius: '8px',
-              padding: '10px'
-            }}
-            title="Marketing"
-            value={Marketing} />
-
-          <DashboardCard
-            icon={<UserOutlined />}
-            iconStyle={{
-              color: 'white',
-              backgroundColor: '#121212',
-              borderRadius: '8px',
-              padding: '10px'
-            }}
-            title="Ventes"
-            value={Ventes} />
+      <motion.div
+        style={{
+          width: '100%',
+          marginLeft: '15px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          gap: '20px',
+          flexWrap: 'wrap'
+        }}
+      >
+        <Space direction="horizontal" size={20} wrap>
+          {[
+            { title: "Effectifs de tous les employers", value: countsEmployer },
+            { title: "Resource humaine", value: Resource },
+            { title: "Finance", value: Finance },
+            { title: "Marketing", value: Marketing },
+            { title: "Ventes", value: Ventes }
+          ].map((item, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: index * 0.1 }}
+              whileHover={{ scale: 1.05 }}
+            >
+              <DashboardCard
+                icon={<UserOutlined />}
+                iconStyle={{
+                  color: 'white',
+                  backgroundColor: '#121212',
+                  borderRadius: '8px',
+                  padding: '10px'
+                }}
+                title={item.title}
+                value={item.value}
+              />
+            </motion.div>
+          ))}
         </Space>
-      </div>
-      <div className="test">
-        <div className="canvas-container">
-          <h3
-            style={{
-              textAlign: 'center',
-              textDecoration: 'underline',
-            }}>Statistique des payments</h3>
-          <canvas ref={chartRef}></canvas>
-        </div>
-        <div className='canvas-container2'>
+      </motion.div>
+
+      <motion.div
+        className="test"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+          gap: '50px', // réduit l'espace entre les graphiques
+          marginTop: '50px',
+          width: '100%',
+        }}
+      >
+       <div className='flex' style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: '20px',
+        flexWrap: 'wrap'
+      }}>
+       <motion.div
+          className="canvas-container"
+          whileHover={{ scale: 1.02 }}
+          transition={{ duration: 0.2 }}
+          style={{
+            background: 'white',
+            borderRadius: '15px',
+            padding: '30px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+          }}
+        >
           <h3 style={{
             textAlign: 'center',
-            textDecoration: 'underline',
+            marginBottom: '30px',
+            color: '#333',
+            fontWeight: 600
+          }}>
+            Statistique des payments
+          </h3>
+          <canvas ref={chartRef}></canvas>
+        </motion.div>
+
+        <motion.div
+          className='canvas-container2'
+          whileHover={{ scale: 1.02 }}
+          transition={{ duration: 0.2 }}
+          style={{
+            background: 'white',
+            borderRadius: '15px',
+            padding: '30px',
+            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
           }}
-          >totale par chaque deduction en (ARIARY)</h3>
+        >
+          <h3 style={{
+            textAlign: 'center',
+            marginBottom: '30px',
+            color: '#333',
+            fontWeight: 600
+          }}>
+            Totale par chaque deduction en (ARIARY)
+          </h3>
           <canvas ref={chartRef2}></canvas>
-        </div>
-      </div>
+        </motion.div>
+       </div>
+      </motion.div>
 
 
-    </div>
+    </motion.div>
   );
 }
+
 function DashboardCard({ title, value, icon, iconStyle }) {
   return (
-    <Card direction="horizontal">
+    <Card
+      style={{
+        borderRadius: '12px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        minWidth: '200px'
+      }}
+    >
       <Space>
-        <Statistic title={title} value={value} prefix={React.cloneElement(icon, { style: iconStyle })} />
+        <Statistic
+          title={<span style={{ fontSize: '14px', color: '#666' }}>{title}</span>}
+          value={value}
+          prefix={React.cloneElement(icon, { style: { ...iconStyle, transition: 'all 0.3s' } })}
+          valueStyle={{ fontSize: '24px', fontWeight: 'bold', color: '#121212' }}
+        />
       </Space>
     </Card>
   );
